@@ -2,6 +2,31 @@
 <html>
   <head>
     <title>Bing Searcher</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        text-align: center;
+      }
+      h1 {
+        margin-top: 20px;
+      }
+      button {
+        background-color: #0078d7;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        margin-top: 20px;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      #emergencyStopButton {
+        background-color: #ff0000;
+      }
+    </style>
     <script src="popup.js"></script>
   </head>
   <body>
