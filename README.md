@@ -6,3 +6,5 @@ Here is a short guide how to install an unpacked extension on Google Chrome or C
 Open the "Extensions" page (chrome://extensions/ or edge://extensions/ of you using edge) in the browser and turn on the "Developer mode".
 
 Click on the "Load unpacked" button and select the directory where the built extension is placed.
+
+in the MobileSearch you need to insert your cookie in code before run
