@@ -1,15 +1,16 @@
 
 # Bing Search Extension for MS Rewards
 
-This is a simple extension for Bing search that automates the process of earning MS Rewards by searching random text on Bing. It runs the search 30 times in a row, which is the daily limit for earning MS Rewards points.
+This is a straightforward browser extension designed for Bing searches, streamlining the process of earning Microsoft Rewards points. The extension automates the search of random text on Bing, reaching the daily limit of 30 searches to maximize MS Rewards points.
 
-This extension works on Chrome and Edge browsers.
+## Compatibility
+The extension is compatible with both Chrome and Edge browsers.
 
 ## Installation
 
 1. Clone or download this repository to your local machine.
-2. Open the "Extensions" page in your browser by typing `chrome://extensions/` in Chrome or `edge://extensions/` in Edge. Make sure the "Developer mode" is turned on.
-3. Click on the "Load unpacked" button and select the directory where the downloaded extension is placed.
+2. Open the "Extensions" page in your browser by typing chrome://extensions/ for Chrome or edge://extensions/ for Edge. Ensure that "Developer mode" is enabled.
+3. Click on the "Load unpacked" button and select the directory where the downloaded extension is located.
 
 ## Usage
 
@@ -29,4 +30,4 @@ This extension works on Chrome and Edge browsers.
 
 ## Note
 
-If you are using the MobileSearch feature, you need to insert your cookie in the code before running the extension.
+If utilizing the Mobile Search feature, ensure to insert your cookie in the code before running the extension.
