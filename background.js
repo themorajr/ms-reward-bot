@@ -22,14 +22,7 @@ function searchBingMobile() {
   intervalId = setInterval(() => {
     const query = Math.random().toString(36).substring(2); // Generate random text
     const url = `https://www.bing.com/search?q=${query}&PC=SANSAAND&form=LWS001&ssp=1&cc=XL&setlang=th&safesearch=moderate`;
-    const options = {
-      method: "GET",
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Linux; Android 7.1.2; SM-G955N Build/N2G48H; ) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/92.0.4515.131 Mobile Safari/537.36 BingSapphire/24.1.410310303",
-        "Cookie": //insert your cookie here
-      },
-    };
-    fetch(url, options);
+    fetch(url);
     counter++;
     if (counter >= 25) {
       stopSearch(); // Stop the search when the counter reaches 20
