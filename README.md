@@ -20,7 +20,7 @@ The extension is compatible with both Chrome and Edge browsers.
 2. Click on the extension icon in your browser.
 3. The extension will automatically search random text 30 times on Bing, earning you MS Rewards points.
 
-### Mobile Search
+### Mobile Search [Not working, Will fix in next version]
 
 1. To use Mobile Search, open Bing.com on your mobile device and sign in to your Microsoft account.
 2. Copy the cookie value from your mobile browser. In Chrome, you can do this by going to the "Application" tab in the developer tools, expanding the "Cookies" section, and copying the value of the "MUID" cookie.
