@@ -1,77 +1,94 @@
 let intervalId;
 let isRunning = false;
 
-function searchBing() {
-  let counter = 0;
-  intervalId = setInterval(() => {
-    const query = Math.random().toString(36).substring(2); // Generate random text
-    chrome.tabs.create({ url: `https://www.bing.com/search?q=${query}`, active: false }, (tab) => {
-      counter++;
-      if (counter >= 40) {
-        stopSearch(); // Stop the search when the counter reaches 30
-      }
-      setTimeout(() => {
-        chrome.tabs.remove(tab.id); // Close the tab after 10 seconds
-      }, 10000);
-    });
-  }, 2000); // Search every 2 seconds
+const INTERVAL_DURATION = 2000; // 2 seconds
+const TAB_CLOSE_DELAY = 10000; // 10 seconds
+const DESKTOP_SEARCH_LIMIT = 40;
+const MOBILE_SEARCH_LIMIT = 25;
+const BADGE_TEXT_ON = "ON";
+const BADGE_TEXT_OFF = "";
+const BADGE_TEXT_EMERGENCY = "!";
+
+function generateQuery() {
+  return Math.random().toString(36).substring(2);
 }
 
-function searchBingMobile() {
+function createTab(url, onTabCreated) {
+  chrome.tabs.create({ url, active: false }, onTabCreated);
+}
+
+function closeTabAfterDelay(tabId, delay) {
+  setTimeout(() => {
+    chrome.tabs.remove(tabId);
+  }, delay);
+}
+
+function performDesktopSearch() {
   let counter = 0;
   intervalId = setInterval(() => {
-    const query = Math.random().toString(36).substring(2); // Generate random text
+    const query = generateQuery();
+    createTab(`https://www.bing.com/search?q=${query}`, (tab) => {
+      counter++;
+      if (counter >= DESKTOP_SEARCH_LIMIT) stopSearch();
+      closeTabAfterDelay(tab.id, TAB_CLOSE_DELAY);
+    });
+  }, INTERVAL_DURATION);
+}
+
+function performMobileSearch() {
+  let counter = 0;
+  intervalId = setInterval(() => {
+    const query = generateQuery();
     const url = `https://www.bing.com/search?q=${query}&PC=SANSAAND&form=LWS001&ssp=1&cc=XL&setlang=th&safesearch=moderate`;
     fetch(url);
     counter++;
-    if (counter >= 25) {
-      stopSearch(); // Stop the search when the counter reaches 20
-    }
-  }, 2000); // Search every 2 seconds
+    if (counter >= MOBILE_SEARCH_LIMIT) stopSearch();
+  }, INTERVAL_DURATION);
 }
 
 function stopSearch() {
   clearInterval(intervalId);
   isRunning = false;
-  chrome.action.setBadgeText({ text: "" });
+  updateBadge(BADGE_TEXT_OFF);
 }
 
-function startSearch() {
-  searchBing();
+function startSearch(searchFunction) {
+  searchFunction();
   isRunning = true;
-  chrome.action.setBadgeText({ text: "ON" });
-  chrome.action.setBadgeBackgroundColor({ color: "#008000" });
-}
-
-function startMobileSearch() {
-  searchBingMobile();
-  isRunning = true;
-  chrome.action.setBadgeText({ text: "ON" });
-  chrome.action.setBadgeBackgroundColor({ color: "#008000" });
+  updateBadge(BADGE_TEXT_ON, "#008000");
 }
 
 function emergencyStop() {
   stopSearch();
-  chrome.action.setBadgeText({ text: "!" });
-  chrome.action.setBadgeBackgroundColor({ color: "#ff0000" });
+  updateBadge(BADGE_TEXT_EMERGENCY, "#ff0000");
 }
 
-chrome.action.onClicked.addListener((tab) => {
+function updateBadge(text, color) {
+  chrome.action.setBadgeText({ text });
+  if (color) chrome.action.setBadgeBackgroundColor({ color });
+}
+
+chrome.action.onClicked.addListener(() => {
   if (isRunning) {
     stopSearch();
   } else {
-    startSearch();
+    startSearch(performDesktopSearch);
   }
 });
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.command === "start") {
-    startSearch();
-  } else if (message.command === "stop") {
-    stopSearch();
-  } else if (message.command === "emergencyStop") {
-    emergencyStop();
-  } else if (message.command === "mobileSearch") {
-    searchBingMobile();
+chrome.runtime.onMessage.addListener((message) => {
+  switch (message.command) {
+    case "start":
+      startSearch(performDesktopSearch);
+      break;
+    case "stop":
+      stopSearch();
+      break;
+    case "emergencyStop":
+      emergencyStop();
+      break;
+    case "mobileSearch":
+      startSearch(performMobileSearch);
+      break;
   }
 });
