@@ -1,79 +1,82 @@
-let intervalId;
-let isRunning = false;
-
+// Constants
 const INTERVAL_DURATION = 2000; // 2 seconds
 const TAB_CLOSE_DELAY = 10000; // 10 seconds
 const DESKTOP_SEARCH_LIMIT = 40;
 const MOBILE_SEARCH_LIMIT = 25;
-const BADGE_TEXT_ON = "ON";
-const BADGE_TEXT_OFF = "";
-const BADGE_TEXT_EMERGENCY = "!";
+const BADGE_TEXT = {
+  ON: "ON",
+  OFF: "",
+  EMERGENCY: "!"
+};
 
-function generateQuery() {
-  return Math.random().toString(36).substring(2);
-}
+// State
+let intervalId;
+let isRunning = false;
 
-function createTab(url, onTabCreated) {
-  chrome.tabs.create({ url, active: false }, onTabCreated);
-}
+// Utility functions
+const generateQuery = () => Math.random().toString(36).substring(2);
 
-function closeTabAfterDelay(tabId, delay) {
-  setTimeout(() => {
-    chrome.tabs.remove(tabId);
-  }, delay);
-}
+const createTab = async (url) => {
+  return new Promise((resolve) => {
+    chrome.tabs.create({ url, active: false }, resolve);
+  });
+};
 
-function performDesktopSearch() {
-  let counter = 0;
-  intervalId = setInterval(() => {
-    const query = generateQuery();
-    createTab(`https://www.bing.com/search?q=${query}`, (tab) => {
-      counter++;
-      if (counter >= DESKTOP_SEARCH_LIMIT) stopSearch();
-      closeTabAfterDelay(tab.id, TAB_CLOSE_DELAY);
-    });
-  }, INTERVAL_DURATION);
-}
+const closeTabAfterDelay = (tabId, delay) => {
+  setTimeout(() => chrome.tabs.remove(tabId), delay);
+};
 
-function performMobileSearch() {
-  let counter = 0;
-  intervalId = setInterval(() => {
-    const query = generateQuery();
-    const url = `https://www.bing.com/search?q=${query}&PC=SANSAAND&form=LWS001&ssp=1&cc=XL&setlang=th&safesearch=moderate`;
-    fetch(url);
-    counter++;
-    if (counter >= MOBILE_SEARCH_LIMIT) stopSearch();
-  }, INTERVAL_DURATION);
-}
-
-function stopSearch() {
-  clearInterval(intervalId);
-  isRunning = false;
-  updateBadge(BADGE_TEXT_OFF);
-}
-
-function startSearch(searchFunction) {
-  searchFunction();
-  isRunning = true;
-  updateBadge(BADGE_TEXT_ON, "#008000");
-}
-
-function emergencyStop() {
-  stopSearch();
-  updateBadge(BADGE_TEXT_EMERGENCY, "#ff0000");
-}
-
-function updateBadge(text, color) {
+const updateBadge = (text, color = null) => {
   chrome.action.setBadgeText({ text });
   if (color) chrome.action.setBadgeBackgroundColor({ color });
-}
+};
 
+// Search functions
+const performSearch = async (searchUrl, limit) => {
+  let counter = 0;
+  intervalId = setInterval(async () => {
+    const query = generateQuery();
+    const url = searchUrl(query);
+    
+    if (searchUrl === desktopSearchUrl) {
+      const tab = await createTab(url);
+      closeTabAfterDelay(tab.id, TAB_CLOSE_DELAY);
+    } else {
+      await fetch(url);
+    }
+    
+    counter++;
+    if (counter >= limit) stopSearch();
+  }, INTERVAL_DURATION);
+};
+
+const desktopSearchUrl = (query) => `https://www.bing.com/search?q=${query}`;
+const mobileSearchUrl = (query) => `https://www.bing.com/search?q=${query}&PC=SANSAAND&form=LWS001&ssp=1&cc=XL&setlang=th&safesearch=moderate`;
+
+const performDesktopSearch = () => performSearch(desktopSearchUrl, DESKTOP_SEARCH_LIMIT);
+const performMobileSearch = () => performSearch(mobileSearchUrl, MOBILE_SEARCH_LIMIT);
+
+// Control functions
+const stopSearch = () => {
+  clearInterval(intervalId);
+  isRunning = false;
+  updateBadge(BADGE_TEXT.OFF);
+};
+
+const startSearch = (searchFunction) => {
+  searchFunction();
+  isRunning = true;
+  updateBadge(BADGE_TEXT.ON, "#008000");
+};
+
+const emergencyStop = () => {
+  stopSearch();
+  updateBadge(BADGE_TEXT.EMERGENCY, "#ff0000");
+};
+
+// Event listeners
 chrome.action.onClicked.addListener(() => {
-  if (isRunning) {
-    stopSearch();
-  } else {
-    startSearch(performDesktopSearch);
-  }
+  isRunning ? stopSearch() : startSearch(performDesktopSearch);
 });
 
 chrome.runtime.onMessage.addListener((message) => {
