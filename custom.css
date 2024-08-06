@@ -1,18 +1,33 @@
-body {
-    background: url(./bg.png);
-}
-
-.logo-img {
-    width: 1.1em;
-    position: relative;
-    top: -3px
-}
-
-@font-face {
-    src: url(https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@600&display=swap);
-    font-family: 'Noto Sans Thai', sans-serif;
-}
-
-div, p, h1, h2, h3, a {
-    font-family: 'Noto Sans Thai', sans-serif;
-}
+  body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            width: 300px;
+            padding: 15px;
+        }
+        h1 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        img {
+            width: 80px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        #startButton { background-color: #0078d4; color: white; }
+        #mobileSearchButton { background-color: #00a4ef; color: white; }
+        #stopButton { background-color: #d13438; color: white; }
+        #emergencyStopButton { background-color: #ffb900; color: black; }
