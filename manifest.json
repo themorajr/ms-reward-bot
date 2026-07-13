@@ -1,15 +1,24 @@
 {
     "manifest_version": 3,
     "name": "Bing Searcher",
-    "version": "1.0.0",
-    "description": "Searches Bing for random text 30 times",
+    "version": "1.1.0",
+    "description": "Automates Bing searches (PC and mobile) to collect Microsoft Rewards points.",
+    "icons": {
+      "128": "bg.png"
+    },
     "background": {
       "service_worker": "background.js"
     },
     "permissions": [
-      "tabs"
+      "declarativeNetRequestWithHostAccess"
+    ],
+    "host_permissions": [
+      "https://www.bing.com/*"
     ],
     "action": {
-      "default_popup": "popup.html"
+      "default_popup": "popup.html",
+      "default_icon": {
+        "128": "bg.png"
+      }
     }
   }

@@ -1,33 +1,53 @@
-
 # Bing Search Extension for MS Rewards
 
-This is a straightforward browser extension designed for Bing searches, streamlining the process of earning Microsoft Rewards points. The extension automates the search of random text on Bing, reaching the daily limit of 30 searches to maximize MS Rewards points.
+A small browser extension that automates Bing searches to help collect Microsoft Rewards points. It opens background tabs with randomly generated, natural-looking queries, spaced out at a randomized interval, and closes them automatically.
+
+> **Disclaimer:** Automating searches violates the Microsoft Rewards terms of use and can get an account suspended. Use at your own risk.
+
+## Features
+
+- **PC search** — runs 40 desktop searches in background tabs.
+- **Mobile search** — runs 25 searches that Bing sees as coming from an Android phone. A [declarativeNetRequest](https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest) session rule rewrites the `User-Agent` (and mobile client hint headers) for the generated search requests only, so your normal browsing on bing.com is unaffected. No cookie copying needed.
+- **Live progress** — the toolbar badge counts down the remaining searches, and the popup shows the current run status.
+- **Stop / Emergency stop** — Stop ends the run; Emergency Stop also closes any search tabs that are still open.
 
 ## Compatibility
-The extension is compatible with both Chrome and Edge browsers.
+
+Works in Chrome and Edge (any Chromium browser with Manifest V3 support).
 
 ## Installation
 
-1. Clone or download this repository to your local machine.
-2. Open the "Extensions" page in your browser by typing chrome://extensions/ for Chrome or edge://extensions/ for Edge. Ensure that "Developer mode" is enabled.
-3. Click on the "Load unpacked" button and select the directory where the downloaded extension is located.
+1. Clone or download this repository.
+2. Open the extensions page: `chrome://extensions/` (Chrome) or `edge://extensions/` (Edge) and enable **Developer mode**.
+3. Click **Load unpacked** and select the repository folder.
 
 ## Usage
 
-### PC Search
+1. Sign in to your Microsoft account on [bing.com](https://www.bing.com).
+2. Click the extension icon to open the popup.
+3. Pick **Start PC Search** or **Start Mobile Search**. Searches open as background tabs and close themselves after a few seconds.
+4. Use **Stop Search** to end the run, or **Emergency Stop** to end it and immediately close all remaining search tabs.
 
-1. Open Bing.com in your browser and make sure you are signed in to your Microsoft account.
-2. Click on the extension icon in your browser.
-3. The extension will automatically search random text 30 times on Bing, earning you MS Rewards points.
+## Configuration
 
-### Mobile Search [Not working, Will fix in next version]
+Timing and limits are constants at the top of `background.js`:
 
-1. To use Mobile Search, open Bing.com on your mobile device and sign in to your Microsoft account.
-2. Copy the cookie value from your mobile browser. In Chrome, you can do this by going to the "Application" tab in the developer tools, expanding the "Cookies" section, and copying the value of the "MUID" cookie.
-3. Paste the cookie value into the "cookie" variable in the `background.js` file.
-4. Click on the extension icon in your browser.
-5. The extension will automatically search random text 20 times on Bing, earning you MS Rewards points.
+| Constant | Default | Meaning |
+|---|---|---|
+| `SEARCH_INTERVAL_MS` | `6000` | Base delay between searches |
+| `SEARCH_JITTER_MS` | `4000` | Random extra delay added to each search |
+| `TAB_CLOSE_DELAY_MS` | `10000` | How long each search tab stays open |
+| `DESKTOP_SEARCH_LIMIT` | `40` | Searches per PC run |
+| `MOBILE_SEARCH_LIMIT` | `25` | Searches per mobile run |
 
-## Note
+## Project layout
 
-If utilizing the Mobile Search feature, ensure to insert your cookie in the code before running the extension.
+| File | Purpose |
+|---|---|
+| `manifest.json` | MV3 manifest (permissions: bing.com host access + `declarativeNetRequestWithHostAccess`) |
+| `background.js` | Service worker: search loop, badge, mobile UA rule |
+| `popup.html` / `popup.js` / `custom.css` | Popup UI |
+
+## License
+
+See [LICENSE](LICENSE).
